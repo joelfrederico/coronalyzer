@@ -53,18 +53,18 @@ def get_rate(series):
     result = spopt.least_squares(
             resid, [series[0], t[0]], jac=get_jac,
             kwargs={'N': series, 't': t})
-    return result.x[0]
+    return 1/result.x[0]
 
 
 window_rate_3d = total_cases.rolling('3d').apply(get_rate)
 window_rate_7d = total_cases.rolling('7d').apply(get_rate)
 rate_fig = go.Figure()
 rate_fig.add_trace(go.Scatter(x=window_rate_3d.index, y=window_rate_3d,
-                              name="Previous 3-day window"))
+                              name="3-day window"))
 rate_fig.add_trace(go.Scatter(x=window_rate_7d.index, y=window_rate_7d,
-                              name="Previous 7-day window"))
+                              name="7-day window"))
 rate_fig.update_layout(
-        yaxis_title="Doubling Rate",
+        yaxis_title=r'Doubling Growth Factor',
         showlegend=True)
 
 app.layout = html.Div([
