@@ -2,3 +2,4 @@ dash==1.9.1
 gunicorn
 pandas
 numpy
+scipy
