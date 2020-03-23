@@ -90,7 +90,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='dropdown',
             options=dropdown,
-            value=[230, 140, 65, 236],
+            value=[226, 137, 62, 238],
             multi=True)
         ]),
     dcc.Graph(
@@ -152,7 +152,6 @@ def update_rate(values, fig):
     data = []
     for value in values:
         data.append(create_rate_data(value, '3d'))
-
     fig['data'] = data
     return fig
 
