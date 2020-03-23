@@ -25,30 +25,28 @@ def get_label(row):
     return label
 
 
+with open('data/los_angeles.json') as f:
+    data = json.load(f)
+
+new_case_data = data['New Cases'][1:]
+indices = data['Date'][1:]
+total_dat = []
+total = 0
+for (i, val) in enumerate(new_case_data):
+    total += val
+    total_dat.append(total)
+
+indices.extend(['Province/State', 'Country/Region'])
+total_dat.extend(['Los Angeles', 'US'])
+la_df = pd.DataFrame(data=[total_dat], columns=indices)
+world_df = world_df.append(la_df)
+world_df.reset_index(inplace=True)
+
 dropdown = []
 for (i, row) in world_df.iterrows():
     label = get_label(row)
     dropdown.append({'label': label, 'value': i})
 
-us_s = world_df.loc[230][4:]
-us_s.index = pd.DatetimeIndex(us_s.index)
-
-with open('data/los_angeles.json') as f:
-    data = json.load(f)
-
-new_case_data = data['New Cases'][1:]
-date_times = pd.to_datetime(data['Date'][1:])
-
-total_dat = np.empty_like(new_case_data)
-total = 0
-for (i, val) in enumerate(new_case_data):
-    total += val
-    total_dat[i] = total
-
-new_cases = pd.Series(new_case_data, index=date_times)
-
-total_cases = pd.Series(total_dat, index=date_times)
-# total_cases = us_s
 total_fig = go.Figure()
 total_fig.update_layout(title='Total Cases', yaxis_title="Cases")
 
@@ -76,14 +74,14 @@ def get_rate(series):
 
 rate_fig = go.Figure()
 rate_fig.update_layout(
-        title='3 Day Fit',
+        title='Exponential Growth: 3 Day Fit',
         yaxis_title=r'Doubling Growth Factor',
         showlegend=True)
 
 rate_fig_7 = go.Figure()
 rate_fig_7.update_layout(
         title='7 Day Fit',
-        yaxis_title=r'Doubling Growth Factor',
+        yaxis_title=r'Exponential Growth: Doubling Growth Factor',
         showlegend=True)
 
 app.layout = html.Div([
@@ -92,7 +90,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='dropdown',
             options=dropdown,
-            value=[230, 140, 65],
+            value=[230, 140, 65, 236],
             multi=True)
         ]),
     dcc.Graph(
@@ -112,7 +110,7 @@ app.layout = html.Div([
 
 
 def row_to_series(row_df):
-    series = row_df[4:]
+    series = row_df[5:]
     series.index = pd.DatetimeIndex(series.index)
     series = series[series > 0]
     return series
